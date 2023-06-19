@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Route, Routes, BrowserRouter } from 'react-router-dom'
+import React, { useEffect, useState } from 'react';
+import { Route, Routes, useNavigate } from 'react-router-dom';
 import Header from './Header';
 import Footer from './Footer';
 import Main from './Main';
@@ -14,22 +14,25 @@ import Register from './Register';
 import Login from './Login';
 import { ProtectedRoute } from './ProtectedRoute';
 import InfoTooltip from './InfoTooltip';
-
+import * as auth from '../utils/auth'
 function App() {
+  const navigate = useNavigate();
   // состояния isOpen попаов
   const [isEditProfilePopupOpen, setIsEditProfilePopupOpen] = useState(false);
   const [isAddPlacePopupOpen, setIsAddPlacePopupOpen] = useState(false);
   const [isEditAvatarPopupOpen, setIsEditAvatarPopupOpen] = useState(false);
   const [isConfirmDeletePopupOpen, setIsConfirmDeletePopupOpen] = useState(false);
   const [selectedCard, setSelectedCard] = useState({ name: '', link: '' });
-  // попап успешна ли регистрация
-  const [isSuccessPopupOpen, setSuccessPopupOpen] = useState(true)
+  // попап успешности регистрации
+  const [isSuccessPopupOpen, setSuccessPopupOpen] = useState(false)
+  // залогинен ли пользователь
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   // состояние карточек
   const [cards, setCards] = useState([]);
   // текущий пользователь 
   const [currentUser, setCurrentUser] = useState({});
   // состояние регистрации
-  const [isRegistrationSuccess, setRegistrationSuccess] = useState(true)
+  const [isRegistrationSuccess, setRegistrationSuccess] = useState(null)
   // обработчики кликов открытия
   function handleEditAvatarClick() {
     setIsEditAvatarPopupOpen(true);
@@ -54,6 +57,7 @@ function App() {
     setIsConfirmDeletePopupOpen(false);
     setSelectedCard(false)
     setSuccessPopupOpen(false)
+    setRegistrationSuccess(false)
   }
   //забираем с сервера информацию о профиле (имя, описание, ссылка аватара)
   React.useEffect(() => {
@@ -130,7 +134,56 @@ function App() {
       })
   }
 
+  // проверка токена
+  useEffect(() => {
+    const jwt = localStorage.getItem('jwt');
+    if (jwt) {
+      auth.checkToken(jwt)
+        .then(res => {
+          if (res) {
+            setIsLoggedIn(true)
+            navigate('/')
+            // сэт профайл емейл? вотскнуть в хэдер
+          }
+        })
+        .catch(err => {
+          console.log(err)
+        })
+    }
+  }, [])
+  // регистрация пользователя 
+  function handleRegistration(email, password) {
+    auth.registr(email, password)
+      .then(res => {
+        if (res) {
+          setRegistrationSuccess(true);
+          setSuccessPopupOpen(true)
+          navigate('/sign-in')
+        }
+      })
+      .catch(err => {
+        setRegistrationSuccess(false);
+        setSuccessPopupOpen(true)
+        console.log(err)
+      })
+  }
+  // авторизация пользователя 
+  function handleAuthorization(email, password) {
+    auth.authorize(email, password)
+      .then(res => {
+        if (res) {
+          setIsLoggedIn(true);
+          localStorage.setItem('jwt', res.token)
+          navigate('/')
 
+        }
+      })
+      .catch(err => {
+        setRegistrationSuccess(false);
+        setSuccessPopupOpen(true)
+        console.log(err)
+      })
+  }
   return (
     <>
       <div className="page">
@@ -141,7 +194,9 @@ function App() {
               path='/'
               element={
                 < ProtectedRoute
-                  component={Main}
+
+                  loggedIn={isLoggedIn}
+                  element={Main}
                   onEditProfile={handleEditProfileClick}
                   onAddPlace={handleAddPlaceClick}
                   onEditAvatar={handleEditAvatarClick}
@@ -150,12 +205,16 @@ function App() {
                   onCardClick={handleCardClick}
                   onCardLike={handleCardLike}
                   onCardDelete={handleCardDelete}
-                />} />
+                />}
+            />
 
             <Route path='/sign-up'
-              element={<Register />} />
+              element={
+                <Register
+                  onRegistration={handleRegistration} />} />
             <Route path='/sign-in'
-              element={<Login />} />
+              element={
+                <Login onAuthorize={handleAuthorization} />} />
             {/* <Route path='/1'
               element={<InfoTooltip isSuccess={isRegistrationSuccess} />} /> */}
           </Routes>

@@ -7,7 +7,9 @@ function Header() {
   return (
     <header className="header">
       <img className="header__logo" src={Logo} alt="логотип" />
-      <Link className='registration__login-link' to={location.pathname === '/sign-up'? '/sign-in' : '/sign-up'}>{location.pathname === '/sign-in'? 'Регистрация' : 'Войти'}</Link>
+      <Link className='registration__login-link' 
+      to={location.pathname === '/sign-up'? '/sign-in' : '/sign-up'}>
+        {location.pathname === '/sign-in'? 'Регистрация' : 'Войти'}</Link>
     </header>
   );
 }
