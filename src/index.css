@@ -44,6 +44,17 @@
 @import url(./blocks/popup/__error/popup__error.css);
 @import url(./blocks/popup/__error/_visible/popup__error_visible.css);
 @import url(./blocks/popup/__title/_confirm-delete/popup__title_confirm-delete.css);
+@import url(./blocks/popup/__title/_center/popup__title_center.css);
 @import url(./blocks/profile/__avatar-container/profile__avatar-container.css);
 @import url(./blocks/card/__button-like-container/card__button-like-container.css);
 @import url(./blocks/card/__button-like-counter/card__button-like-counter.css);
+@import url(./blocks/registration/__button/registration__button.css);
+@import url(./blocks/registration/__form/registration__form.css);
+@import url(./blocks/registration/__input/registration__input.css);
+@import url(./blocks/registration/__login-link/registration__login-link.css);
+@import url(./blocks/registration/__sign-in/registration__sign-in.css);
+@import url(./blocks/registration/__title/registration__title.css);
+@import url(./blocks/registration/__login-text/registration__login-text.css);
+@import url(./blocks/popup/__success/popup__success.css);
+@import url(./blocks/popup/__success/_no/popup__success_no.css);
+@import url(./blocks/popup/__success/_yes/popup__success_yes.css);

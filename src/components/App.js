@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Route, Routes, BrowserRouter } from 'react-router-dom'
 import Header from './Header';
 import Footer from './Footer';
 import Main from './Main';
@@ -9,6 +10,10 @@ import PopupConfirm from './PopupConfirm';
 import api from '../utils/Api';
 import ImagePopup from './ImagePopup';
 import CurrentUserContext from '../contexts/CurrentUserContext';
+import Register from './Register';
+import Login from './Login';
+import { ProtectedRoute } from './ProtectedRoute';
+import InfoTooltip from './InfoTooltip';
 
 function App() {
   // состояния isOpen попаов
@@ -17,11 +22,14 @@ function App() {
   const [isEditAvatarPopupOpen, setIsEditAvatarPopupOpen] = useState(false);
   const [isConfirmDeletePopupOpen, setIsConfirmDeletePopupOpen] = useState(false);
   const [selectedCard, setSelectedCard] = useState({ name: '', link: '' });
+  // попап успешна ли регистрация
+  const [isSuccessPopupOpen, setSuccessPopupOpen] = useState(true)
   // состояние карточек
   const [cards, setCards] = useState([]);
   // текущий пользователь 
   const [currentUser, setCurrentUser] = useState({});
-
+  // состояние регистрации
+  const [isRegistrationSuccess, setRegistrationSuccess] = useState(true)
   // обработчики кликов открытия
   function handleEditAvatarClick() {
     setIsEditAvatarPopupOpen(true);
@@ -45,6 +53,7 @@ function App() {
     setIsAddPlacePopupOpen(false);
     setIsConfirmDeletePopupOpen(false);
     setSelectedCard(false)
+    setSuccessPopupOpen(false)
   }
   //забираем с сервера информацию о профиле (имя, описание, ссылка аватара)
   React.useEffect(() => {
@@ -127,16 +136,29 @@ function App() {
       <div className="page">
         <CurrentUserContext.Provider value={currentUser}>
           <Header />
-          <Main
-            onEditProfile={handleEditProfileClick}
-            onAddPlace={handleAddPlaceClick}
-            onEditAvatar={handleEditAvatarClick}
-            onConfirmDelete={handleConfirmDeleteClick}
-            cards={cards}
-            onCardClick={handleCardClick}
-            onCardLike={handleCardLike}
-            onCardDelete={handleCardDelete}
-          />
+          <Routes>
+            <Route
+              path='/'
+              element={
+                < ProtectedRoute
+                  component={Main}
+                  onEditProfile={handleEditProfileClick}
+                  onAddPlace={handleAddPlaceClick}
+                  onEditAvatar={handleEditAvatarClick}
+                  onConfirmDelete={handleConfirmDeleteClick}
+                  cards={cards}
+                  onCardClick={handleCardClick}
+                  onCardLike={handleCardLike}
+                  onCardDelete={handleCardDelete}
+                />} />
+
+            <Route path='/sign-up'
+              element={<Register />} />
+            <Route path='/sign-in'
+              element={<Login />} />
+            {/* <Route path='/1'
+              element={<InfoTooltip isSuccess={isRegistrationSuccess} />} /> */}
+          </Routes>
           <Footer />
           <PopupEditProfile
             isOpen={isEditProfilePopupOpen}
@@ -145,8 +167,8 @@ function App() {
           />
           <PopupAddCard
             isOpen={isAddPlacePopupOpen}
-            onClose={closeAllPopups} 
-            onAddPlace={handleAddPlaceSubmit}/>
+            onClose={closeAllPopups}
+            onAddPlace={handleAddPlaceSubmit} />
           <PopupEditAvatar
             isOpen={isEditAvatarPopupOpen}
             onClose={closeAllPopups}
@@ -157,6 +179,10 @@ function App() {
             onClose={closeAllPopups} />
           <PopupConfirm
             isOpen={isConfirmDeletePopupOpen}
+            onClose={closeAllPopups} />
+          <InfoTooltip
+            isOpen={isSuccessPopupOpen}
+            isSuccess={isRegistrationSuccess}
             onClose={closeAllPopups} />
         </CurrentUserContext.Provider>
       </div>
