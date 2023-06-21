@@ -29,7 +29,7 @@ export const authorize = (email, password) => {
   .then((res)=> getResponseData(res))
 }
 export const checkToken = (token) => {
-  return fetch(`${url}/user/me`, {
+  return fetch(`${url}/users/me`, {
     method: 'GET',
     headers: {
       'Accept': 'application/json',

@@ -11,8 +11,6 @@ function Register(props) {
   // const [password, setPassword] = useState('')
 
   function handleChange(e) {
-
-
     const { name, value } = e.target;
     setFormValue({
       ...formValue,
@@ -26,13 +24,14 @@ function Register(props) {
   return (
     <form className='registration__form' noValidate onSubmit={handleSubmit}>
       <h2 className='registration__title'>Регистрация</h2>
-      <div class="registration__inputs">
+      <div className='registration__inputs'>
         <input
           name='email'
           className='registration__input'
           type='email'
           id='email-input'
           placeholder='Email'
+          autoComplete= 'email'
           value={formValue.email}
           onChange={handleChange} />
         <input
@@ -41,6 +40,7 @@ function Register(props) {
           type='password'
           id='password-input'
           placeholder='Пароль'
+          autoComplete= 'current-password'
           value={formValue.password}
           onChange={handleChange} />
       </div>

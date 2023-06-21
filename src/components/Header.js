@@ -1,15 +1,30 @@
 import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, Route, Routes, useLocation } from 'react-router-dom';
 import Logo from '../images/logo_white.svg';
 
-function Header() {
+function Header(props) {
   const location = useLocation();
   return (
     <header className="header">
       <img className="header__logo" src={Logo} alt="логотип" />
-      <Link className='registration__login-link' 
-      to={location.pathname === '/sign-up'? '/sign-in' : '/sign-up'}>
-        {location.pathname === '/sign-in'? 'Регистрация' : 'Войти'}</Link>
+      {location.pathname === '/sign-up' && (
+        <Link to="/sign-in" className="header__link">
+          Войти
+        </Link>
+      )}
+      {location.pathname === '/sign-in' && (
+        <Link to="/sign-up" className="header__link">
+          Регистрация
+        </Link>
+      )}
+      {location.pathname === '/' && (
+        <div className='header__container'>
+          <p className='header__email'>{props.email}</p>
+          <Link to="/sign-up" className="header__link header__link_grey" onClick={props.onLogout}>
+            Выйти
+          </Link>
+        </div>
+      )}
     </header>
   );
 }

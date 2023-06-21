@@ -27,6 +27,8 @@ function App() {
   const [isSuccessPopupOpen, setSuccessPopupOpen] = useState(false)
   // залогинен ли пользователь
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  // стейт емейл пользователя 
+  const [emailProfile, setEmailProfile] = useState('')
   // состояние карточек
   const [cards, setCards] = useState([]);
   // текущий пользователь 
@@ -135,16 +137,16 @@ function App() {
   }
 
   // проверка токена
-  useEffect(() => {
+  React.useEffect(() => {
     const jwt = localStorage.getItem('jwt');
-    if (jwt) {
+    if (jwt && !isLoggedIn) {
       auth.checkToken(jwt)
-        .then(res => {
-          if (res) {
-            setIsLoggedIn(true)
-            navigate('/')
-            // сэт профайл емейл? вотскнуть в хэдер
-          }
+        .then((res) => {
+          setIsLoggedIn(true)
+          navigate('/', { replace: true })
+          setEmailProfile(res.data.email)
+          // console.log(res.data.email)
+
         })
         .catch(err => {
           console.log(err)
@@ -158,7 +160,7 @@ function App() {
         if (res) {
           setRegistrationSuccess(true);
           setSuccessPopupOpen(true)
-          navigate('/sign-in')
+          navigate('/sign-in', { replace: true })
         }
       })
       .catch(err => {
@@ -174,8 +176,7 @@ function App() {
         if (res) {
           setIsLoggedIn(true);
           localStorage.setItem('jwt', res.token)
-          navigate('/')
-
+          navigate('/', { replace: true })
         }
       })
       .catch(err => {
@@ -184,17 +185,25 @@ function App() {
         console.log(err)
       })
   }
+  //выход пользователя 
+  function handleLogout() {
+    setIsLoggedIn(false);
+    localStorage.removeItem('jwt')
+    navigate('/sign-in', { replace: true })
+  }
+
   return (
     <>
       <div className="page">
         <CurrentUserContext.Provider value={currentUser}>
-          <Header />
+          <Header
+            onLogout={handleLogout}
+            email={emailProfile} />
           <Routes>
             <Route
               path='/'
               element={
                 < ProtectedRoute
-
                   loggedIn={isLoggedIn}
                   element={Main}
                   onEditProfile={handleEditProfileClick}
@@ -207,7 +216,6 @@ function App() {
                   onCardDelete={handleCardDelete}
                 />}
             />
-
             <Route path='/sign-up'
               element={
                 <Register
@@ -215,8 +223,6 @@ function App() {
             <Route path='/sign-in'
               element={
                 <Login onAuthorize={handleAuthorization} />} />
-            {/* <Route path='/1'
-              element={<InfoTooltip isSuccess={isRegistrationSuccess} />} /> */}
           </Routes>
           <Footer />
           <PopupEditProfile
