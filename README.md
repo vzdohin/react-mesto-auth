@@ -5,7 +5,7 @@
 
 ## Как запустить проект
 1. Клонируйте репозиторий на свой компьютер
-git clone https://github.com/your-username/mesto-auth.git
+git clone https://github.com/vzdohin/react-mesto-auth.git
 
 2. Установите необходимые пакеты, используя npm
 npm install
