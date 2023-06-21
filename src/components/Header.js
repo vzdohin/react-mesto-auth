@@ -20,7 +20,7 @@ function Header(props) {
       {location.pathname === '/' && (
         <div className='header__container'>
           <p className='header__email'>{props.email}</p>
-          <Link to="/sign-up" className="header__link header__link_grey" onClick={props.onLogout}>
+          <Link to="/sign-in" className="header__link header__link_grey" onClick={props.onLogout}>
             Выйти
           </Link>
         </div>

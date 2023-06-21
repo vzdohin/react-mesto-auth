@@ -61,6 +61,23 @@ function App() {
     setSuccessPopupOpen(false)
     setRegistrationSuccess(false)
   }
+    // проверка токена
+    React.useEffect(() => {
+      const jwt = localStorage.getItem('jwt');
+      if (jwt && !isLoggedIn) {
+        auth.checkToken(jwt)
+          .then((res) => {
+            setIsLoggedIn(true)
+            navigate('/', { replace: true })
+            setEmailProfile(res.data.email)
+            // console.log(res.data.email)
+  
+          })
+          .catch(err => {
+            console.log(err)
+          })
+      }
+    }, [])
   //забираем с сервера информацию о профиле (имя, описание, ссылка аватара)
   React.useEffect(() => {
     api.getUserInfo()
@@ -136,23 +153,7 @@ function App() {
       })
   }
 
-  // проверка токена
-  React.useEffect(() => {
-    const jwt = localStorage.getItem('jwt');
-    if (jwt && !isLoggedIn) {
-      auth.checkToken(jwt)
-        .then((res) => {
-          setIsLoggedIn(true)
-          navigate('/', { replace: true })
-          setEmailProfile(res.data.email)
-          // console.log(res.data.email)
 
-        })
-        .catch(err => {
-          console.log(err)
-        })
-    }
-  }, [])
   // регистрация пользователя 
   function handleRegistration(email, password) {
     auth.registr(email, password)
@@ -176,6 +177,7 @@ function App() {
         if (res) {
           setIsLoggedIn(true);
           localStorage.setItem('jwt', res.token)
+          setEmailProfile(email)
           navigate('/', { replace: true })
         }
       })
@@ -189,6 +191,7 @@ function App() {
   function handleLogout() {
     setIsLoggedIn(false);
     localStorage.removeItem('jwt')
+    setEmailProfile('')
     navigate('/sign-in', { replace: true })
   }
 
